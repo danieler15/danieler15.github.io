@@ -12,7 +12,10 @@ $(document).ready(function() {
 	maxPageIndex =  json["questions"].length - 1;
 	responses = new Array(maxPageIndex + 1);
     
+    alert("abc");
+    
     $.getJSON("http://danieler15.github.io/questions.json", function(data) {
+        alert("data: ");
         alert(data);
     });
 	
