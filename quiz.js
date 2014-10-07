@@ -4,15 +4,17 @@ var respones;
 var userName;
 var questionData = json;
 
-$.getJSON("http://danieler15.github.io/questions.json", function(data) {
-    alert(data);
-});
+
 
 $(document).ready(function() {
 	// load questions
 	currentPageIndex = -1;
 	maxPageIndex =  json["questions"].length - 1;
 	responses = new Array(maxPageIndex + 1);
+    
+    $.getJSON("http://danieler15.github.io/questions.json", function(data) {
+        alert(data);
+    });
 	
 	$("#nav").on("click", ".button-role-nav", function(e) {
 		var selected = $("input[id=choice-input]:checked", "#response-form").val();
