@@ -1,5 +1,4 @@
-var json = {
-	questions: [
+{[
 		{
 			"question": "What is the capital of Germany?",
 			"choices": ["Berlin", "Hamburg", "Munich", "Frankfurt", "Cologne"],
@@ -62,5 +61,5 @@ var json = {
 		},
 		
 	]
-};
+}
         
