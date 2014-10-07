@@ -1,0 +1,22 @@
+/* CSS Document */
+
+#content {
+	margin: 10;	
+	text-align: center;
+}
+
+#head {
+	margin: 0 auto;
+	text-align: center;
+	font-size: 30px;
+}
+
+#choice-input {
+	margin-top: 15px;
+}
+
+#nav-button {
+	margin-top: 20px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
