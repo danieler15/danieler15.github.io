@@ -1,4 +1,5 @@
-{[
+var json = 
+    [
 		{
 			"question": "What is the capital of Germany?",
 			"choices": ["Berlin", "Hamburg", "Munich", "Frankfurt", "Cologne"],
@@ -14,7 +15,18 @@
 			"choices": ["New York", "Washington DC"],
 			"answer": "Washington DC"
 		},
+        
         {
+			"question": "What is the capital of Liechtenstein?",
+			"choices": ["Vaduz", "Bratislava", "Valetta"],
+			"answer": "Vaduz"
+		}
+		
+	];
+
+        
+/*
+{
 			"question": "Which of the following is the capital of Ireland?",
 			"choices": ["Dublin", "Limerick", "Cork", "Scotland"],
 			"answer": "Dublin"
@@ -54,12 +66,4 @@
 			"choices": ["Quito", "Rabat", "Santiago", "Sucre"],
 			"answer": "Quito"
 		},
-        {
-			"question": "What is the capital of Liechtenstein?",
-			"choices": ["Vaduz", "Bratislava", "Valetta"],
-			"answer": "Vaduz"
-		},
-		
-	]
-}
-        
+    */

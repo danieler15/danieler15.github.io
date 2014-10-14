@@ -19,4 +19,39 @@
 	margin-top: 20px;
 	margin-left: 10px;
 	margin-right: 10px;
+    margin-bottom: 50px;
+}
+
+#login-input {
+    margin-top: 10px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+#leaderboard-header {
+    margin-top: 30px;
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+    text-align:center;
+    font-size: 1.5 em;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#leaderboard-table {
+    width: 100%;
+    margin-top: 30px;
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+    text-align: center;
+    border: 1 px solid black;
+}
+
+.center {
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+}
+
+table, th, td {
+    border: 1 px solid black;
 }

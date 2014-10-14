@@ -1,82 +1,76 @@
-var currentPageIndex = 0;
-var maxPageIndex = 2;
-var respones;
-var userName;
-var questionData = json;
-
-
-
-$(document).ready(function() {
-	// load questions
+function jsonLoaded(json) {
+    console.log("json loaded");
+    
+    questionsArray = json;
 	currentPageIndex = -1;
-	maxPageIndex =  json["questions"].length - 1;
-	responses = new Array(maxPageIndex + 1);
+	maxPageIndex =  json.length - 1;
     
-    alert("abc");
+    drawLoginSignup();
+}
     
-    $.getJSON("http://danieler15.github.io/questions.json", function(data) {
-        alert("data: ");
-        alert(data);
-    });
-	
-	$("#nav").on("click", ".button-role-nav", function(e) {
-		var selected = $("input[id=choice-input]:checked", "#response-form").val();
-		var displacement = ($(this).hasClass("nav-left")) ? -1 : 1;
-		
-		if (!selected && displacement > 0) {
-			alert("Please answer the question before continuing. You can always navigate backwards to change your answer");
-			return;
-		}
-		else {
-			responses[currentPageIndex] = selected;			
-			currentPageIndex += displacement;
-			drawQuestionPage();
-		}
-		
-		
-	});
-	$("#content").on("click", ".button-submit-name", function(e) {
-        e.preventDefault();
-		var val = $("input[class=name-input]").val();
-		
-		if (val == false) {
-			alert("You must enter your name to continue.");
-			return;
-		}
-		else {
-			userName = val;
-			currentPageIndex++;
-			drawQuestionPage();
-		}
-	});
-    $(".name-input").keypress(function(e) {
-        if (e.which == '13' && currentPageIndex == -1) {
-            e.preventDefault();
-            $(".button-submit-name").click();
-        } 
-    });
-	$("#nav").on("click", ".button-role-submit", function(e) {
-        var selected = $("input[id=choice-input]:checked", "#response-form").val();
-        if (!selected) {
-			alert("Please answer the question before continuing. You can always navigate backwards to change your answer");
-			return;
-		}
-        responses[currentPageIndex] = selected;			
-        currentPageIndex++;
-		drawResultsPage();
-	});
-    $("#nav").on("click", ".button-role-try-again", function(e) {
-        location.reload();
-    });
-});
+function authSucceeded(username) {
+    currentPageIndex = 0;
+    currentUsername = username;
+    responses = new Array(maxPageIndex + 1);
+    
+    drawQuestionPage();
+}
+    
+function recordUserScore(score) {
+    var userData = getUserItem(currentUsername);
+    userData.lastScore = score;
+    if (score > userData.maxScore) {
+        userData.maxScore = score;
+    }
+    setUserItem(currentUsername, userData);
+}
+    
+function getUsersDictionary() {
+    var d = JSON.parse(localStorage.getItem("users"));
+    if (d != null) {
+        return d;
+    } 
+    else {
+        setUsersDictionary({});
+        return {};
+    }
+}
+    
+function setUsersDictionary(dict) {
+    localStorage.setItem("users", JSON.stringify(dict));
+}
+    
+function setUserItem(username, data) {
+    var dict = getUsersDictionary();
+    dict[username] = data;
+    setUsersDictionary(dict);
+}
+    
+function getUserItem(username) {
+    var dict = getUsersDictionary();
+    if (dict != null) {
+        return dict[username];
+    }
+    return null;
+}
 
 function drawResultsPage() {
-	$("#quiz-content").empty();
-	var newHtml = "<div id='score'><p>" + userName + ", you got a total of " + userScore() + " out of " + (maxPageIndex + 1) + " questions correct.</p></div><canvas width='200' height='200' style='margin:0 auto; background-color:#fff5ee  ;' id='score-canvas'>Canvas not supported in your browser.</canvas>";
+    recordUserScore(userScore());
+    $("#question-text").empty();
+	var newHtml = "<div id='score'><p>" + currentUsername + ", you got a total of " + userScore() + " out of " + (maxPageIndex + 1) + " questions correct.</p></div><canvas width='200' height='200' style='margin:0 auto; background-color:#fff5ee  ;' id='score-canvas'>Canvas not supported in your browser.</canvas> <div id='leaderboard-header'>Current Leaderboard:</div> <div class='center'><table id='leaderboard-table'><tr><th>Username</th><th>High Score</th></tr> ";
+    
+    var usersDict = getUsersDictionary();
+    //usersDict.sort(function(a, b) {return (b.maxScore - a.maxScore);});
+    for (var key in usersDict) {
+        var user = usersDict[key];
+        newHtml += "<tr><td>" + user.username + "</td><td>" + user.maxScore + "</td></tr>";
+    }
+    newHtml += "</div></table>";
 	
-	$("#quiz-content").html(newHtml);
-    $("#nav").html("<input type='button' class='button-role-try-again' id='nav-button' value='Try Again!' />");
+	$("#response-form").html(newHtml);
+    $("#nav").html("<input type='button' style='margin-right:10px;' class='button-role-try-again' id='nav-button' value='Try Again!' /><input type='button' style='margin-left:10px;' class='button-role-signout' id='nav-button' value='Signout' />");
     drawScoreChart(userScore()/(maxPageIndex+1));
+    recordUserScore(userScore());
 }
     
 function drawScoreChart(percentRight) {
@@ -91,11 +85,21 @@ function drawScoreChart(percentRight) {
     context.fill();
 }
     
+function drawNameEntry() {
+    $("#question-text").html("Please enter your name below:");
+    $("#response-form").html('<input type="text" id="input" class="name-input" name="name" placeholder="Your Name" /><input type="button" class="button-submit-name" value="Continue" />');
+}
+    
+function drawLoginSignup() {
+    $("#question-text").html("Login Or Sign Up Below:");
+    $("#response-form").html('<input type="text" id="login-input" class="username-input" name="username" placeholder="Username" /><br /><input type="password" id="login-input" class="password-input" name="password" placeholder="Password" /><br /><input id="login-input" type="button" class="button-submit-login" value="Log In" /><input type="button" id="login-input" class="button-submit-signup" value="Sign Up" />');
+}
+    
 function userScore() {
 	var questionsCorrect = 0;
 	for (var i = 0; i <= maxPageIndex; i++) {
 		var userResponse = responses[i];
-		var answer = json["questions"][i]["answer"];
+		var answer = questionsArray[i]["answer"];
 				
 		var correct = userResponse == answer;
 		//alert(userResponse + "--" + answer + "--" + correct);
@@ -112,8 +116,8 @@ function drawQuestionPage() {
 }
 
 function loadQuestion(index) {
-	var questionObject = json["questions"][index];
-	var questionText = userName + ", " + questionObject["question"] + "   (Question " + (index+1) + "/" + (maxPageIndex+1) + ")";
+	var questionObject = questionsArray[index];
+	var questionText = currentUsername + ", " + questionObject["question"] + "   (Question " + (index+1) + "/" + (maxPageIndex+1) + ")";
 	$("#question-text").html(questionText);
 	
 	var questionChoices = questionObject["choices"];
@@ -158,4 +162,4 @@ function loadNavButtons(index) {
 		$("#nav").append(leftButton);
 		$("#nav").append(rightButton);
 	}
-}
+}   

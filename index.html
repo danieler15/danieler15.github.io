@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript" language="javascript" src="quiz.js"></script>
+<script type="text/javascript" language="javascript" src="questions.json"></script>
 <title>Capitals Quiz</title>
 
 <script type="text/javascript">
@@ -20,12 +21,11 @@
 
 <div id="quiz-content">
 <div id="question-container">
-    	<p id="question-text">What is your name?</p>
+    	<p id="question-text"></p>
     </div>
     <div id="choice-select-container">
     	<form id="response-form">
-        	<input type="text" id="input" class="name-input" name="name" placeholder="Your Name" />
-            <input type="button" class="button-submit-name" value="Continue" />
+        	
         </form>
     </div>
 </div>
@@ -33,6 +33,110 @@
 <div id="nav">
 
 </div>
+    
+<script type="text/javascript">
+var currentPageIndex = -1;
+var maxPageIndex;
+var respones;
+var currentUsername;
+var questionsArray;
+
+$(document).ready(function() {
+	// load questions
+    
+    jsonLoaded(json);
+    
+	$("#nav").on("click", ".button-role-nav", function(e) {
+		var selected = $("input[id=choice-input]:checked", "#response-form").val();
+		var displacement = ($(this).hasClass("nav-left")) ? -1 : 1;
+		
+		if (!selected && displacement > 0) {
+			alert("Please answer the question before continuing. You can always navigate backwards to change your answer");
+			return;
+		}
+		else {
+			responses[currentPageIndex] = selected;			
+			currentPageIndex += displacement;
+			drawQuestionPage();
+		}
+		
+		
+	});
+    $("#content").on("click", ".button-submit-login", function(e) {
+        e.preventDefault(); 
+        
+        var username = $("input[class=username-input").val();
+        var password = $("input[class=password-input").val();
+        
+        if (getUserItem(username) != null && getUserItem(username).password === password) {
+            console.log("login successful");
+            authSucceeded(username);
+        }
+        else {
+            alert("Username or password incorrect");
+        }
+    });
+    $("#content").on("click", ".button-submit-signup", function(e) {
+        e.preventDefault(); 
+        
+        var username = $("input[class=username-input").val();
+        var password = $("input[class=password-input").val();
+        
+        console.log(getUserItem(username));
+        if (getUserItem(username) != null) {
+            alert("This username is already taken");
+            return;
+        }
+        
+        var newUser = {
+            "username": username,
+            "password": password,
+            "maxScore": 0,
+            "lastScore": 0
+        };
+        setUserItem(username, newUser);
+        authSucceeded(username);
+    });
+//	$("#content").on("click", ".button-submit-name", function(e) {
+//        e.preventDefault();
+//		var val = $("input[class=name-input]").val();
+//		
+//		if (val == false) {
+//			alert("You must enter your name to continue.");
+//			return;
+//		}
+//		else {
+//			currentUsername = val;
+//			currentPageIndex++;
+//			drawQuestionPage();
+//		}
+//	});
+    $(".name-input").keypress(function(e) {
+        if (e.which == '13' && currentPageIndex == -1) {
+            e.preventDefault();
+            $(".button-submit-name").click();
+        } 
+    });
+	$("#nav").on("click", ".button-role-submit", function(e) {
+        var selected = $("input[id=choice-input]:checked", "#response-form").val();
+        if (!selected) {
+			alert("Please answer the question before continuing. You can always navigate backwards to change your answer");
+			return;
+		}
+        responses[currentPageIndex] = selected;			
+        currentPageIndex++;
+		drawResultsPage();
+	});
+    $("#nav").on("click", ".button-role-try-again", function(e) {
+        authSucceeded(currentUsername);
+    });
+    $("#nav").on("click", ".button-role-signout", function(e) {
+        location.reload();
+    });
+});
+    
+ 
+</script>
 
 </body>
 </html>
